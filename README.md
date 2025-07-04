@@ -39,8 +39,8 @@ When prompted for a timestamp, you can enter formats like:
 July 4, 2025 2:35 PM
 
 ## 📦 File Structure
-main.py   # Main application script
-README.md                # Project documentation
+1. main.py    # Main application script
+2. README.md  # Project documentation
 
 ## 📄 License
 This project is open-source and free to use under the MIT License.

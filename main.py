@@ -10,21 +10,49 @@ root.geometry("500x600")
 participant1 = simpledialog.askstring("Participant", "Enter name of first participant (will appear on left):", parent=root)
 participant2 = simpledialog.askstring("Participant", "Enter name of second participant (will appear on right):", parent=root)
 
-# Create a frame to hold the conversation
-conversation_frame = tk.Frame(root, bg="white")
-conversation_frame.pack(fill=tk.BOTH, expand=True)
+# Create a frame to hold the conversation and scrollbar
+main_frame = tk.Frame(root)
+main_frame.pack(fill=tk.BOTH, expand=True)
+
+# Create a canvas and scrollbar
+canvas = tk.Canvas(main_frame, bg="white")
+scrollbar = tk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
+canvas.configure(yscrollcommand=scrollbar.set)
+
+scrollbar.pack(side="right", fill="y")
+canvas.pack(side="left", fill="both", expand=True)
+
+# Create a frame inside the canvas to hold the messages
+scrollable_frame = tk.Frame(canvas, bg="white")
+scrollable_window = canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+# Update scrollregion when the size of the scrollable_frame changes
+def on_frame_configure(event):
+    canvas.configure(scrollregion=canvas.bbox("all"))
+
+scrollable_frame.bind("<Configure>", on_frame_configure)
+
+# Resize the inner frame when the canvas size changes
+def on_canvas_configure(event):
+    canvas.itemconfig(scrollable_window, width=event.width)
+
+canvas.bind("<Configure>", on_canvas_configure)
 
 # Function to add a message bubble with side label
 def add_message(side, comment):
-    message_frame = tk.Frame(conversation_frame, bg="white")
-    message_frame.pack(anchor='e' if side == participant2 else 'w', pady=5, padx=10, fill=tk.X)
+    message_frame = tk.Frame(scrollable_frame, bg="white")
+    message_frame.pack(anchor='w' if side == participant1 else 'e', pady=5, padx=10)
 
-    side_label = tk.Label(message_frame, text=side, font=("Arial", 8, "bold"), bg="white", anchor='w')
+    side_label = tk.Label(message_frame, text=side, font=("Arial", 8, "bold"), bg="white")
     side_label.pack(anchor='w' if side == participant1 else 'e')
 
-    bubble = tk.Label(message_frame, text=comment, bg="#DCF8C6" if side == participant2 else "#E6E6E6",
+    bubble = tk.Label(message_frame, text=comment, bg="#E6E6E6" if side == participant1 else "#DCF8C6",
                       padx=10, pady=5, wraplength=300, justify=tk.LEFT if side == participant1 else tk.RIGHT)
-    bubble.pack(anchor='e' if side == participant2 else 'w')
+    bubble.pack(anchor='w' if side == participant1 else 'e')
+
+    # Auto-scroll to the bottom
+    canvas.update_idletasks()
+    canvas.yview_moveto(1.0)
 
 # Function to prompt for input and add message
 def prompt_and_add():

@@ -38,12 +38,12 @@ def on_canvas_configure(event):
 
 canvas.bind("<Configure>", on_canvas_configure)
 
-# Function to add a message bubble with side label
-def add_message(side, comment):
+# Function to add a message bubble with side label and timestamp
+def add_message(side, comment, timestamp):
     message_frame = tk.Frame(scrollable_frame, bg="white")
     message_frame.pack(anchor='w' if side == participant1 else 'e', pady=5, padx=10)
 
-    side_label = tk.Label(message_frame, text=side, font=("Arial", 8, "bold"), bg="white")
+    side_label = tk.Label(message_frame, text=f"{side} [{timestamp}]", font=("Arial", 8, "bold"), bg="white")
     side_label.pack(anchor='w' if side == participant1 else 'e')
 
     bubble = tk.Label(message_frame, text=comment, bg="#E6E6E6" if side == participant1 else "#DCF8C6",
@@ -58,8 +58,9 @@ def add_message(side, comment):
 def prompt_and_add():
     side = simpledialog.askstring("Input", f"Enter side ({participant1}/{participant2}):", parent=root)
     comment = simpledialog.askstring("Input", "Enter comment:", parent=root)
-    if side and comment and side in [participant1, participant2]:
-        add_message(side, comment)
+    timestamp = simpledialog.askstring("Input", "Enter date and time (e.g., 2025-07-04 14:35 or July 4, 2025 2:35 PM):", parent=root)
+    if side and comment and timestamp and side in [participant1, participant2]:
+        add_message(side, comment, timestamp)
 
 # Button to add a new message
 add_button = tk.Button(root, text="Add Message", command=prompt_and_add)

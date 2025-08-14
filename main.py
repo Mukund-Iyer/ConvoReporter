@@ -121,12 +121,13 @@ def import_conversation():
             imported = json.load(f)
 
         if not participant1 or not participant2:
-            participant1 = simpledialog.askstring("Participant", "Enter name of first participant:", parent=root)
-            participant2 = simpledialog.askstring("Participant", "Enter name of second participant:", parent=root)
-            if not participant1 or not participant2:
-                messagebox.showwarning("Missing Info", "Both participant names are required.")
-                return
-            left_participant, right_participant = sorted([participant1, participant2])
+            participant_list = []
+            for instance in imported:
+                if instance["side"] not in participant_list:
+                    participant_list.append(instance["side"])
+
+            left_participant, right_participant = sorted(participant_list)
+            participant1, participant2 = sorted(participant_list)
 
         for msg in imported:
             add_message(msg["side"], msg["comment"], msg["timestamp"])
